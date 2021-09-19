@@ -20,4 +20,14 @@ interface FlickrApi {
         @Query("extras") extras: String = "url_s"
     ): Response<Photo>
 
+    @GET("services/rest/")
+    suspend fun getSearchPhotos(
+        @Query("method") method: String = "flickr.photos.search",
+        @Query("api_key") apiKey: String = API_KEY,
+        @Query("format") format: String = "json",
+        @Query("nojsoncallback") noJsonCallBack: Int = 1,
+        @Query("extras") extras: String = "url_s",
+        @Query("text") searchText: String
+    ): Response<Photo>
+
 }

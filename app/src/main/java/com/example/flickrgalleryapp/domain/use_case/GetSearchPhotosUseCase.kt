@@ -6,8 +6,9 @@ import com.example.flickrgalleryapp.domain.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetPhotosUseCase @Inject constructor(private val photoRepository: PhotoRepository) {
+class GetSearchPhotosUseCase @Inject constructor(private val photoRepository: PhotoRepository) {
 
-    suspend fun execute(): Flow<PagingData<PhotoX>> = photoRepository.getPhotos()
+    suspend fun execute(searchText: String): Flow<PagingData<PhotoX>> =
+        photoRepository.getSearchPhotos(searchText)
 
 }

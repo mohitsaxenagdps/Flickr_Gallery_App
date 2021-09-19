@@ -1,23 +1,32 @@
 package com.example.flickrgalleryapp.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import com.example.flickrgalleryapp.common.Event
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.flickrgalleryapp.data.model.PhotoX
 import com.example.flickrgalleryapp.domain.use_case.GetPhotosUseCase
+import com.example.flickrgalleryapp.domain.use_case.GetSearchPhotosUseCase
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 
-class MainActivityViewModel(private val getPhotosUseCase: GetPhotosUseCase) : ViewModel() {
+class MainActivityViewModel(
+    private val getPhotosUseCase: GetPhotosUseCase,
+    private val getSearchPhotosUseCase: GetSearchPhotosUseCase,
+) : ViewModel() {
 
-    private val isLoading = MutableLiveData<Event<Boolean>>()
-    val _isLoading: LiveData<Event<Boolean>>
-        get() = isLoading
+     suspend fun getPhotos(): Flow<PagingData<PhotoX>> {
+        val data = viewModelScope.async {
+            getPhotosUseCase.execute()
+        }
+        return data.await().cachedIn(viewModelScope)
+    }
 
-    fun getPhotos() = liveData {
-        isLoading.value = Event(true)
-        val photoList = getPhotosUseCase.execute()
-        emit(photoList)
-        isLoading.value = Event(false)
+    suspend fun getSearchPhotos(searchText: String): Flow<PagingData<PhotoX>> {
+        val data = viewModelScope.async {
+            getSearchPhotosUseCase.execute(searchText)
+        }
+        return data.await().cachedIn(viewModelScope)
     }
 
 }
